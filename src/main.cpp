@@ -4,8 +4,13 @@
 
 #define DHTPIN 14     // DHT22 data pin
 #define DHTTYPE DHT22 // DHT22 sensor type
+#define ADKEYPIN 4    // ADKEY pin number
 
-#define ADKEYPIN 4 // ADKEY pin number
+unsigned long previousMillis = 0; // Store the time of the previous update
+const long interval = 1000;       // Update interval in milliseconds
+
+float temperature;
+float humidity;
 
 DHT dht(23, DHTTYPE); // DHT22 sensor type
 
@@ -21,12 +26,16 @@ void setup()
 }
 
 void loop()
-
 {
+  unsigned long currentMillis = millis(); // Store the current time
 
-  float temperature = dht.readTemperature(); // Read temperature in Celsius
-  float humidity = dht.readHumidity();       // Read humidity
+  if (currentMillis - previousMillis >= interval)
+  {
+    previousMillis = currentMillis; // Update the previous time
 
+    temperature = dht.readTemperature(); // Read temperature in Celsius
+    humidity = dht.readHumidity();       // Read humidity
+  }
   // Read value from ADKEY pin and print to console
   int adkeyValue = analogRead(ADKEYPIN);
 
@@ -56,28 +65,5 @@ void loop()
     lcd.print("Menu");   // Print the text "Menu" on the LCD screen
 
     delay(1000); // Wait for 1 seconds
-  }
-
-  if (adkeyValue > 4000)
-  {
-    // Up btn
-    lcd.clear(); // Clear the LCD screen
-  }
-  if (adkeyValue > 900 && adkeyValue < 1200)
-  {
-    // Down btn
-    lcd.clear(); // Clear the LCD screen
-  }
-
-  if (adkeyValue > 0 && adkeyValue < 200)
-  {
-    // Left btn
-    lcd.clear(); // Clear the LCD screen
-  }
-
-  if (adkeyValue > 1500 && adkeyValue < 2000)
-  {
-    // Right btn
-    lcd.clear(); // Clear the LCD screen
   }
 }
