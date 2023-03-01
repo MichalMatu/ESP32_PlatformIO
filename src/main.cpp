@@ -6,6 +6,8 @@
 #define DHTTYPE DHT22 // DHT22 sensor type
 #define ADKEYPIN 4    // ADKEY pin number
 
+#define RELAYPIN 25 // Relay pin number
+
 unsigned long previousMillis = 0; // Store the time of the previous update
 const long interval = 1000;       // Update interval in milliseconds
 
@@ -27,7 +29,8 @@ void setup()
   lcd.backlight(); // Turn on the backlight
   dht.begin();     // Initialize the DHT22 sensor
 
-  pinMode(ADKEYPIN, INPUT); // Set the ADKEY pin as an input
+  pinMode(ADKEYPIN, INPUT);  // Set the ADKEY pin as an input
+  pinMode(RELAYPIN, OUTPUT); // Set the relay pin as an output
 }
 
 void loop()
@@ -107,5 +110,27 @@ void loop()
       set_humidity = set_humidity - 1;
       delay(200);
     }
+  }
+
+  // If temperature is higher than set temperature
+  if (temperature > set_temperature)
+  {
+    digitalWrite(RELAYPIN, HIGH); // Turn on the relay
+  }
+  // If temperature is lower than set temperature
+  else
+  {
+    digitalWrite(RELAYPIN, LOW); // Turn off the relay
+  }
+
+  // If humidity is higher than set humidity
+  if (humidity > set_humidity)
+  {
+    digitalWrite(RELAYPIN, HIGH); // Turn on the relay
+  }
+  // If humidity is lower than set humidity
+  else
+  {
+    digitalWrite(RELAYPIN, LOW); // Turn off the relay
   }
 }
