@@ -20,6 +20,8 @@ int set_humidity = 50;
 bool menu = false;
 // set default backlight state to true
 bool backlightOn = true;
+// bool auto/off relay mode
+bool autoMode = true;
 // DHT22 sensor type
 DHT dht(23, DHTTYPE);
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
@@ -82,6 +84,15 @@ void loop()
       delay(250);
     }
 
+    // when press adkeyValue > 1000 && adkeyValue < 1100 switch off auto mode and turn off relay when press again switch on auto mode
+    if (adkeyValue > 1000 && adkeyValue < 1100)
+    {
+      autoMode = !autoMode;
+      // display AUTO or OFF on the LCD screen
+      digitalWrite(RELAYPIN, LOW);
+      delay(200);
+    }
+
     // Display temperature and humidity
     lcd.setCursor(0, 0);    // Set the cursor to the first column and first row
     lcd.print("Tem: ");     // Print the text "Temp: " on the LCD screen
@@ -101,11 +112,11 @@ void loop()
   else
   {
     lcd.setCursor(0, 0);        // Set the cursor to the first column and first row
-    lcd.print("Set Tem:");      // Print the text "Menu" on the LCD screen
-    lcd.setCursor(9, 0);        // Set the cursor to the 11th column and first row
+    lcd.print("Set T:");        // Print the text "Menu" on the LCD screen
+    lcd.setCursor(7, 0);        // Set the cursor to the 11th column and first row
     lcd.print(set_temperature); // Print the ADKEY value on the LCD screen
-    lcd.setCursor(11, 0);       // Set the cursor to the 15th column and first row
-    lcd.print(" C");            // Print the text "C" on the LCD screen
+    lcd.setCursor(9, 0);        // Set the cursor to the 15th column and first row
+    lcd.print("C");             // Print the text "C" on the LCD screen
 
     if (adkeyValue > 370 && adkeyValue < 500 && set_temperature < 100)
     {
@@ -120,11 +131,11 @@ void loop()
     }
 
     lcd.setCursor(0, 1);     // Set the cursor to the first column and second row
-    lcd.print("Set Hum:");   // Print the text "Menu" on the LCD screen
-    lcd.setCursor(9, 1);     // Set the cursor to the 11th column and second row
+    lcd.print("Set H:");     // Print the text "Menu" on the LCD screen
+    lcd.setCursor(7, 1);     // Set the cursor to the 11th column and second row
     lcd.print(set_humidity); // Print the humidity value on the LCD screen
-    lcd.setCursor(11, 1);    // Set the cursor to the 15th column and second row
-    lcd.print(" %");         // Print the text "%" on the LCD screen
+    lcd.setCursor(9, 1);     // Set the cursor to the 15th column and second row
+    lcd.print("%");          // Print the text "%" on the LCD screen
 
     if (adkeyValue > 1790 && adkeyValue < 1850 && set_humidity < 100)
     {
@@ -139,18 +150,33 @@ void loop()
     }
   }
 
-  // If temperature or humidity is higher than set temperature or humidity
-  if (temperature < set_temperature || humidity < set_humidity)
+  // If auto mode is active
+  if (autoMode)
   {
-    digitalWrite(RELAYPIN, HIGH); // Turn on the relay
-    lcd.setCursor(13, 0);         // Set the cursor to the 15th column and first row
-    lcd.print(" ON");             // Print the text "ON" on the LCD screen
+    lcd.setCursor(12, 1); // Set the cursor to the 14th column and first row
+    lcd.print("AUTO");    // Print the text "AUTO" on the LCD screen
+    // If temperature or humidity is higher than set temperature or humidity
+    if (temperature < set_temperature || humidity < set_humidity)
+    {
+      digitalWrite(RELAYPIN, HIGH); // Turn on the relay
+      lcd.setCursor(13, 0);         // Set the cursor to the 15th column and first row
+      lcd.print(" ON");             // Print the text "ON" on the LCD screen
+    }
+    // If temperature or humidity is lower than set temperature or humidity
+    else
+    {
+      digitalWrite(RELAYPIN, LOW); // Turn off the relay
+      lcd.setCursor(13, 0);        // Set the cursor to the 15th column and first row
+      lcd.print("OFF");            // Print the text "ON" on the LCD screen
+    }
   }
-  // If temperature or humidity is lower than set temperature or humidity
+  // If auto mode is not active
   else
   {
-    digitalWrite(RELAYPIN, LOW); // Turn off the relay
-    lcd.setCursor(13, 0);        // Set the cursor to the 15th column and first row
-    lcd.print("OFF");            // Print the text "ON" on the LCD screen
+    lcd.setCursor(12, 1); // Set the cursor to the 14th column and first row
+    lcd.print(" OFF");    // Print the text "OFF" on the LCD screen
+    lcd.setCursor(13, 0); // Set the cursor to the 15th column and first row
+    lcd.print("   ");     // Print the text "   " on the LCD screen
+    digitalWrite(RELAYPIN, LOW);
   }
 }
