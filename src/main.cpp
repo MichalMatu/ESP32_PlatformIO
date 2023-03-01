@@ -12,6 +12,11 @@ const long interval = 1000;       // Update interval in milliseconds
 float temperature;
 float humidity;
 
+int set_temperature = 24;
+int set_humidity = 50;
+
+bool menu = false;
+
 DHT dht(23, DHTTYPE); // DHT22 sensor type
 
 LiquidCrystal_I2C lcd(0x27, 16, 2); // Set the LCD address to 0x27 for a 16 chars and 2 line display
@@ -29,41 +34,78 @@ void loop()
 {
   unsigned long currentMillis = millis(); // Store the current time
 
-  if (currentMillis - previousMillis >= interval)
-  {
-    previousMillis = currentMillis; // Update the previous time
-
-    temperature = dht.readTemperature(); // Read temperature in Celsius
-    humidity = dht.readHumidity();       // Read humidity
-  }
-  // Read value from ADKEY pin and print to console
+  // Read value from ADKEY pin
   int adkeyValue = analogRead(ADKEYPIN);
 
-  if (adkeyValue == 4095)
+  // If menu button is pressed
+  if (adkeyValue > 2900 && adkeyValue < 3000)
   {
+    menu = !menu; // Toggle the menu state
+    delay(200);   // Wait for 200 milliseconds to avoid button bounce
+    lcd.clear();  // Clear the LCD screen
+  }
+
+  // If menu is not active
+  if (!menu)
+  {
+    // Update temperature and humidity every interval
+    if (currentMillis - previousMillis >= interval)
+    {
+      previousMillis = currentMillis;      // Update the previous time
+      temperature = dht.readTemperature(); // Read temperature in Celsius
+      humidity = dht.readHumidity();       // Read humidity
+    }
+
+    // Display temperature and humidity
     lcd.setCursor(0, 0);    // Set the cursor to the first column and first row
-    lcd.print("T: ");       // Print the text "Temp: " on the LCD screen
+    lcd.print("Tem: ");     // Print the text "Temp: " on the LCD screen
     lcd.print(temperature); // Print the temperature value on the LCD screen
     lcd.print(" C");        // Print the text " C" on the LCD screen
 
     lcd.setCursor(0, 1); // Set the cursor to the first column and second row
-    lcd.print("H: ");    // Print the text "Humidity: " on the LCD screen
+    lcd.print("Hum: ");  // Print the text "Humidity: " on the LCD screen
     lcd.print(humidity); // Print the humidity value on the LCD screen
-    lcd.print("%");      // Print the text "%" on the LCD screen
-
-    lcd.setCursor(12, 0);  // Set the cursor to the 13th column and second row
-    lcd.print(adkeyValue); // Print the ADKEY value on the LCD screen
-
-    delay(1000); // Wait for 1 seconds
+    lcd.print(" %");     // Print the text "%" on the LCD screen
   }
-
-  if (adkeyValue > 2900 && adkeyValue < 3000)
+  // If menu is active
+  else
   {
-    // Menu btn
-    lcd.clear();         // Clear the LCD screen
-    lcd.setCursor(0, 0); // Set the cursor to the first column and first row
-    lcd.print("Menu");   // Print the text "Menu" on the LCD screen
+    lcd.setCursor(0, 0);        // Set the cursor to the first column and first row
+    lcd.print("Set Tem:");      // Print the text "Menu" on the LCD screen
+    lcd.setCursor(9, 0);        // Set the cursor to the 11th column and first row
+    lcd.print(set_temperature); // Print the ADKEY value on the LCD screen
+    lcd.setCursor(13, 0);       // Set the cursor to the 15th column and first row
+    lcd.print("C");             // Print the text "C" on the LCD screen
 
-    delay(1000); // Wait for 1 seconds
+    if (adkeyValue > 370 && adkeyValue < 500 && set_temperature < 100)
+    {
+      set_temperature = set_temperature + 1;
+      delay(200);
+    }
+
+    if (adkeyValue > 1000 && adkeyValue < 1100 && set_temperature > -40)
+    {
+      set_temperature = set_temperature - 1;
+      delay(200);
+    }
+
+    lcd.setCursor(0, 1);     // Set the cursor to the first column and second row
+    lcd.print("Set Hum:");   // Print the text "Menu" on the LCD screen
+    lcd.setCursor(9, 1);     // Set the cursor to the 11th column and second row
+    lcd.print(set_humidity); // Print the humidity value on the LCD screen
+    lcd.setCursor(13, 1);    // Set the cursor to the 15th column and second row
+    lcd.print("%");          // Print the text "%" on the LCD screen
+
+    if (adkeyValue > 1790 && adkeyValue < 1850 && set_humidity < 100)
+    {
+      set_humidity = set_humidity + 1;
+      delay(200);
+    }
+
+    if (adkeyValue < 110 && set_humidity > 0)
+    {
+      set_humidity = set_humidity - 1;
+      delay(200);
+    }
   }
 }
