@@ -19,6 +19,8 @@ int set_humidity = 50;
 
 bool menu = false;
 
+bool backlightOn = true;
+
 DHT dht(23, DHTTYPE); // DHT22 sensor type
 
 LiquidCrystal_I2C lcd(0x27, 16, 2); // Set the LCD address to 0x27 for a 16 chars and 2 line display
@@ -59,6 +61,27 @@ void loop()
       humidity = dht.readHumidity();       // Read humidity
     }
 
+    // if adkeyValue > 370 && adkeyValue < 500 is pressed swich off backlight if is pressed again switch on backlight
+    // Check if the button was pressed
+    if (adkeyValue > 370 && adkeyValue < 500)
+    {
+      // Toggle the backlight state
+      backlightOn = !backlightOn;
+
+      // Turn the backlight on or off depending on the state
+      if (backlightOn)
+      {
+        lcd.backlight();
+      }
+      else
+      {
+        lcd.noBacklight();
+      }
+
+      // Wait a short time to debounce the button
+      delay(100);
+    }
+
     // Display temperature and humidity
     lcd.setCursor(0, 0);    // Set the cursor to the first column and first row
     lcd.print("Tem: ");     // Print the text "Temp: " on the LCD screen
@@ -82,7 +105,7 @@ void loop()
     lcd.setCursor(9, 0);        // Set the cursor to the 11th column and first row
     lcd.print(set_temperature); // Print the ADKEY value on the LCD screen
     lcd.setCursor(11, 0);       // Set the cursor to the 15th column and first row
-    lcd.print("C");             // Print the text "C" on the LCD screen
+    lcd.print(" C");            // Print the text "C" on the LCD screen
 
     if (adkeyValue > 370 && adkeyValue < 500 && set_temperature < 100)
     {
@@ -101,7 +124,7 @@ void loop()
     lcd.setCursor(9, 1);     // Set the cursor to the 11th column and second row
     lcd.print(set_humidity); // Print the humidity value on the LCD screen
     lcd.setCursor(11, 1);    // Set the cursor to the 15th column and second row
-    lcd.print("%");          // Print the text "%" on the LCD screen
+    lcd.print(" %");         // Print the text "%" on the LCD screen
 
     if (adkeyValue > 1790 && adkeyValue < 1850 && set_humidity < 100)
     {
