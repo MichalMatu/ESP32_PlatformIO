@@ -10,20 +10,20 @@
 
 unsigned long previousMillis = 0; // Store the time of the previous update
 const long interval = 1000;       // Update interval in milliseconds
-
+// set float variables for temperature and humidity
 float temperature;
 float humidity;
-
+// set default temperature and humidity
 int set_temperature = 24;
 int set_humidity = 50;
-
+// set default menu state to false
 bool menu = false;
-
+// set default backlight state to true
 bool backlightOn = true;
-
-DHT dht(23, DHTTYPE); // DHT22 sensor type
-
-LiquidCrystal_I2C lcd(0x27, 16, 2); // Set the LCD address to 0x27 for a 16 chars and 2 line display
+// DHT22 sensor type
+DHT dht(23, DHTTYPE);
+// Set the LCD address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 void setup()
 {
