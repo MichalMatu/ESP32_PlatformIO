@@ -79,7 +79,7 @@ void loop()
       }
 
       // Wait a short time to debounce the button
-      delay(100);
+      delay(250);
     }
 
     // Display temperature and humidity
@@ -110,13 +110,13 @@ void loop()
     if (adkeyValue > 370 && adkeyValue < 500 && set_temperature < 100)
     {
       set_temperature = set_temperature + 1;
-      delay(100);
+      delay(200);
     }
 
     if (adkeyValue > 1000 && adkeyValue < 1100 && set_temperature > -40)
     {
       set_temperature = set_temperature - 1;
-      delay(100);
+      delay(200);
     }
 
     lcd.setCursor(0, 1);     // Set the cursor to the first column and second row
@@ -129,43 +129,28 @@ void loop()
     if (adkeyValue > 1790 && adkeyValue < 1850 && set_humidity < 100)
     {
       set_humidity = set_humidity + 1;
-      delay(100);
+      delay(200);
     }
 
     if (adkeyValue < 110 && set_humidity > 0)
     {
       set_humidity = set_humidity - 1;
-      delay(100);
+      delay(200);
     }
   }
 
-  // If temperature is higher than set temperature
-  if (temperature > set_temperature)
-  {
-    digitalWrite(RELAYPIN, LOW); // Turn on the relay
-    lcd.setCursor(15, 0);        // Set the cursor to the 15th column and first row
-    lcd.print("0");              // Print the text "ON" on the LCD screen
-  }
-  // If temperature is lower than set temperature
-  else
-  {
-    digitalWrite(RELAYPIN, HIGH); // Turn off the relay
-    lcd.setCursor(15, 0);         // Set the cursor to the 15th column and first row
-    lcd.print("1");               // Print the text "ON" on the LCD screen
-  }
-
-  // If humidity is higher than set humidity
-  if (humidity > set_humidity)
-  {
-    digitalWrite(RELAYPIN, LOW); // Turn off the relay
-    lcd.setCursor(15, 1);        // Set the cursor to the 15th column and second row
-    lcd.print("0");              // Print the text "ON" on the LCD screen
-  }
-  // If humidity is lower than set humidity
-  else
+  // If temperature or humidity is higher than set temperature or humidity
+  if (temperature < set_temperature || humidity < set_humidity)
   {
     digitalWrite(RELAYPIN, HIGH); // Turn on the relay
-    lcd.setCursor(15, 1);         // Set the cursor to the 15th column and second row
-    lcd.print("1");               // Print the text "ON" on the LCD screen
+    lcd.setCursor(13, 0);         // Set the cursor to the 15th column and first row
+    lcd.print(" ON");             // Print the text "ON" on the LCD screen
+  }
+  // If temperature or humidity is lower than set temperature or humidity
+  else
+  {
+    digitalWrite(RELAYPIN, LOW); // Turn off the relay
+    lcd.setCursor(13, 0);        // Set the cursor to the 15th column and first row
+    lcd.print("OFF");            // Print the text "ON" on the LCD screen
   }
 }
