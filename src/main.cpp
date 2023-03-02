@@ -185,4 +185,17 @@ void loop()
     digitalWrite(RELAYPIN, LOW);
     digitalWrite(RELAY_PIN, LOW);
   }
+  //  if adkeyvalue = 4095 for 5 second set menu to false
+  if (adkeyValue == 4095)
+  {
+    if (currentMillis - previousMillis >= 5000)
+    {
+      menu = false;
+      previousMillis = currentMillis;
+    }
+  }
+  else
+  {
+    previousMillis = currentMillis;
+  }
 }
