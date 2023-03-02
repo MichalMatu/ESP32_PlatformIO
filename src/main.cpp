@@ -6,7 +6,8 @@
 #define DHTTYPE DHT22 // DHT22 sensor type
 #define ADKEYPIN 4    // ADKEY pin number
 
-#define RELAYPIN 2 // Relay pin number
+#define RELAYPIN 2   // Relay pin number
+#define RELAY_PIN 17 // Relay pin number
 
 unsigned long previousMillis = 0; // Store the time of the previous update
 const long interval = 1000;       // Update interval in milliseconds
@@ -33,8 +34,9 @@ void setup()
   lcd.backlight(); // Turn on the backlight
   dht.begin();     // Initialize the DHT22 sensor
 
-  pinMode(ADKEYPIN, INPUT);  // Set the ADKEY pin as an input
-  pinMode(RELAYPIN, OUTPUT); // Set the relay pin as an output
+  pinMode(ADKEYPIN, INPUT);   // Set the ADKEY pin as an input
+  pinMode(RELAYPIN, OUTPUT);  // Set the relay pin as an output
+  pinMode(RELAY_PIN, OUTPUT); // Set the relay pin as an output
 }
 
 void loop()
@@ -90,6 +92,7 @@ void loop()
       autoMode = !autoMode;
       // display AUTO or OFF on the LCD screen
       digitalWrite(RELAYPIN, LOW);
+      digitalWrite(RELAY_PIN, LOW);
       delay(200);
     }
 
@@ -159,15 +162,17 @@ void loop()
     if (temperature < set_temperature || humidity < set_humidity)
     {
       digitalWrite(RELAYPIN, HIGH); // Turn on the relay
-      lcd.setCursor(13, 0);         // Set the cursor to the 15th column and first row
-      lcd.print(" ON");             // Print the text "ON" on the LCD screen
+      digitalWrite(RELAY_PIN, HIGH);
+      lcd.setCursor(13, 0); // Set the cursor to the 15th column and first row
+      lcd.print(" ON");     // Print the text "ON" on the LCD screen
     }
     // If temperature or humidity is lower than set temperature or humidity
     else
     {
       digitalWrite(RELAYPIN, LOW); // Turn off the relay
-      lcd.setCursor(13, 0);        // Set the cursor to the 15th column and first row
-      lcd.print("OFF");            // Print the text "ON" on the LCD screen
+      digitalWrite(RELAY_PIN, LOW);
+      lcd.setCursor(13, 0); // Set the cursor to the 15th column and first row
+      lcd.print("OFF");     // Print the text "ON" on the LCD screen
     }
   }
   // If auto mode is not active
@@ -178,5 +183,6 @@ void loop()
     lcd.setCursor(13, 0); // Set the cursor to the 15th column and first row
     lcd.print("   ");     // Print the text "   " on the LCD screen
     digitalWrite(RELAYPIN, LOW);
+    digitalWrite(RELAY_PIN, LOW);
   }
 }
