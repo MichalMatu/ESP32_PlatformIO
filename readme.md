@@ -17,6 +17,17 @@ Once you have installed the PlatformIO IDE, you can clone this repository and op
 - ADKeyboard
 - Relay 250A 10A
 
+## 3D STL file in 3D_print folder
+
+- box.stl - 3D model of the case Fusion 360
+- FBG5_box.gcode - Gcode for 3D printing on Flying Bear Ghost 5
+
+![3D Model](3D_print/3D.png)
+
+## Circuit Diagram
+
+- not ready yet
+
 ## Contribution
 
 If you have any questions or concerns about making a contribution, it's important to communicate with me.
